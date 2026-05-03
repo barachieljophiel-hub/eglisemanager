@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion Église Complète</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- ÉCRAN DE CONNEXION -->
+    <div id="loginScreen" class="login-container">
+        <div class="login-box">
+            <div class="login-header">
+                <h1>⛪ Gestion Église</h1>
+                <p>Système de gestion complet</p>
+            </div>
+            <form onsubmit="handleLogin(); return false;" class="login-form">
+                <div class="form-group-login">
+                    <label>Nom d'utilisateur</label>
+                    <input type="text" id="usernameInput" placeholder="Entrez votre nom" required>
+                </div>
+                <div class="form-group-login">
+                    <label>Mot de passe</label>
+                    <input type="password" id="passwordInput" placeholder="Entrez votre mot de passe" required>
+                </div>
+                <button type="submit" class="btn-login">🔐 Connexion</button>
+            </form>
+            <div class="login-footer">
+                <p>Première visite? <a href="#" onclick="showRegisterModal(); return false;">S'inscrire</a></p>
+                <p style="font-size: 12px; color: #999; margin-top: 10px;">
+                    <strong>Compte de démonstration:</strong><br>
+                    Utilisateur: <strong>admin</strong><br>
+                    Mot de passe: <strong>1234</strong>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL D'INSCRIPTION -->
+    <div id="registerModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeRegisterModal()">&times;</span>
+            <h2>📝 Créer un compte</h2>
+            <form onsubmit="handleRegister(); return false;" class="login-form">
+                <div class="form-group-login">
+                    <label>Nom de l'église</label>
+                    <input type="text" id="egliseNameInput" placeholder="Nom de votre église" required>
+                </div>
+                <div class="form-group-login">
+                    <label>Nom d'utilisateur</label>
+                    <input type="text" id="registerUsernameInput" placeholder="Choisissez un identifiant" required>
+                </div>
+                <div class="form-group-login">
+                    <label>Email</label>
+                    <input type="email" id="registerEmailInput" placeholder="Votre email" required>
+                </div>
+                <div class="form-group-login">
+                    <label>Mot de passe</label>
+                    <input type="password" id="registerPasswordInput" placeholder="Mot de passe sécurisé" required>
+                </div>
+                <div class="form-group-login">
+                    <label>Confirmez le mot de passe</label>
+                    <input type="password" id="registerPasswordConfirmInput" placeholder="Confirmez votre mot de passe" required>
+                </div>
+                <button type="submit" class="btn-login">✅ Créer un compte</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- APPLICATION PRINCIPALE -->
+    <div id="mainApp" class="main-app" style="display: none;">
+        <div class="container">
+            <!-- NAVBAR -->
+            <nav class="navbar">
+                <div class="navbar-left">
+                    <h1>⛪ Gestion Église</h1>
+                    <span id="userInfo" class="user-info"></span>
+                </div>
+                <div class="nav-buttons">
+                    <button onclick="showModule('membres')" class="btn-nav active">👤 Membres</button>
+                    <button onclick="showModule('dime')" class="btn-nav">💰 Dîme</button>
+                    <button onclick="showModule('offrande')" class="btn-nav">🙏 Offrande</button>
+                    <button onclick="showModule('groupe')" class="btn-nav">👥 Groupe</button>
+                    <button onclick="showModule('plan')" class="btn-nav">📋 Plan</button>
+                    <button onclick="showModule('evenement')" class="btn-nav">🎉 Événement</button>
+                    <button onclick="showModule('cimetiere')" class="btn-nav">⛑️ Cimetière</button>
+                    <button onclick="showModule('bapteme')" class="btn-nav">💧 Baptême</button>
+                    <button onclick="showModule('mariage')" class="btn-nav">💒 Mariage</button>
+                    <button onclick="showModule('objets')" class="btn-nav">📦 Objets</button>
+                    <button onclick="showModule('stats')" class="btn-nav">📊 Statistiques</button>
+                    <button onclick="showModule('licence')" class="btn-nav">🔑 Licence</button>
+                </div>
+                <div class="navbar-right">
+                    <button onclick="showUserMenu()" class="btn-user-menu">⚙️ <span id="currentUser"></span></button>
+                    <div id="userMenu" class="user-menu" style="display: none;">
+                        <a href="#" onclick="showChangePasswordModal(); return false;">🔑 Changer le mot de passe</a>
+                        <a href="#" onclick="handleLogout(); return false;">🚪 Déconnexion</a>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- PARAMÈTRES DE DEVISE -->
+            <div class="settings-bar">
+                <label>Devise: </label>
+                <select id="deviseSelect" onchange="changeDevise()">
+                    <option value="USD">$ USD (Dollars)</option>
+                    <option value="FRF">F FRF (Francs)</option>
+                    <option value="EUR">€ EUR (Euros)</option>
+                    <option value="XAF">F XAF (Francs CFA)</option>
+                </select>
+                <span id="deviseActuelle">Devise: $ USD</span>
+            </div>
+
+            <!-- MODULE MEMBRES -->
+            <div id="membres" class="module">
+                <h2>👤 Gestion des Membres</h2>
+                <form onsubmit="addMembre(); return false;" class="form-group">
+                    <input type="text" id="nomMembre" placeholder="Nom complet" required>
+                    <input type="email" id="emailMembre" placeholder="Email">
+                    <input type="tel" id="telephoneMembre" placeholder="Téléphone" required>
+                    <input type="text" id="adresseMembre" placeholder="Adresse" required>
+                    <input type="date" id="dateNaissanceMembre" placeholder="Date de naissance">
+                    <input type="text" id="professionMembre" placeholder="Profession">
+                    <select id="sexeMembre" required>
+                        <option value="">-- Sélectionner le sexe --</option>
+                        <option value="Homme">Homme</option>
+                        <option value="Femme">Femme</option>
+                    </select>
+                    <select id="statusMembre" required>
+                        <option value="">-- Sélectionner le statut --</option>
+                        <option value="Actif">✅ Actif</option>
+                        <option value="Inactif">❌ Inactif</option>
+                        <option value="Visiteur">👥 Visiteur</option>
+                    </select>
+                    <input type="date" id="dateAdhereMembre" placeholder="Date d'adhésion" required>
+                    <select id="fonctionMembre">
+                        <option value="">-- Sélectionner une fonction --</option>
+                        <option value="Pasteur">🙏 Pasteur</option>
+                        <option value="Diacre">👨‍⚖️ Diacre</option>
+                        <option value="Diaconesse">👩‍⚖️ Diaconesse</option>
+                        <option value="Responsable groupe">👥 Responsable groupe</option>
+                        <option value="Secrétaire">📝 Secrétaire</option>
+                        <option value="Trésorier">💰 Trésorier</option>
+                        <option value="Musicien">🎵 Musicien</option>
+                        <option value="Aucune">📌 Aucune</option>
+                    </select>
+                    <textarea id="remarqueMembre" placeholder="Remarques (optionnel)" rows="2"></textarea>
+                    <button type="submit" class="btn-add">➕ Ajouter Membre</button>
+                </form>
+                <table id="membreTable" class="table">
+                    <thead>
+                        <tr>
+                            <th>Nom</th>
+                            <th>Téléphone</th>
+                            <th>Email</th>
+                            <th>Adresse</th>
+                            <th>Sexe</th>
+                            <th>Fonction</th>
+                            <th>Statut</th>
+                            <th>Date d'adhésion</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <div class="stats-box">
+                    <p>Total Membres: <strong id="totalMembre">0</strong></p>
+                    <p>Membres Actifs: <strong id="membresActifs">0</strong></p>
+                    <p>Hommes: <strong id="membresHommes">0</strong> | Femmes: <strong id="membresFemmes">0</strong></p>
+                </div>
+            </div>
+
+            <!-- MODULE DÎME -->
+            <div id="dime" class="module">
+                <h2>💰 Gestion des Dîmes</h2>
+                <form onsubmit="addDime(); return false;" class="form-group">
+                    <input type="text" id="nomDime" placeholder="Nom du donateur" required>
+                    <input type="number" id="montantDime" placeholder="Montant" step="0.01" min="0" required>
+                    <input type="date" id="dateDime" required>
+                    <input type="text" id="telephoneDime" placeholder="Téléphone (optionnel)">
+                    <textarea id="descDime" placeholder="Description (optionnel)" rows="2"></textarea>
+                    <button type="submit" class="btn-add">➕ Ajouter Dîme</button>
+                </form>
+                <table id="dimeTable" class="table">
+                    <thead>
+                        <tr>
+                            <th>Donateur</th>
+                            <th>Montant</th>
+                            <th>Date</th>
+                            <th>Téléphone</th>
+                            <th>Description</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <div class="stats-box">
+                    <p>Total Dîmes: <strong id="totalDime">0</strong></p>
+                    <p>Nombre de dîmes: <strong id="countDime">0</strong></p>
+                    <p>Moyenne par dîme: <strong id="moyenneDime">0</strong></p>
+                </div>
+            </div>
+
+            <!-- MODULE OFFRANDE -->
+            <div id="offrande" class="module">
+                <h2>🙏 Gestion des Offrandes</h2>
+                <form onsubmit="addOffrande(); return false;" class="form-group">
+                    <input type="text" id="nomOffrande" placeholder="Nom du donateur" required>
+                    <input type="number" id="montantOffrande" placeholder="Montant" step="0.01" min="0" required>
+                    <input type="date" id="dateOffrande" required>
+                    <select id="typeOffrande" required>
+                        <option value="">-- Sélectionner le type --</option>
+                        <option value="Culte">🙏 Culte</option>
+                        <option value="Projet">🏗️ Projet</option>
+                        <option value="Besoin">❤️ Besoin</option>
+                        <option value="Missionnaire">🌍 Missionnaire</option>
+                        <option value="Autre">📌 Autre</option>
+                    </select>
+                    <textarea id="descOffrande" placeholder="Description (optionnel)" rows="2"></textarea>
+                    <button type="submit" class="btn-add">➕ Ajouter Offrande</button>
+                </form>
+                <table id="offrande-table" class="table">
+                    <thead>
+                        <tr>
+                            <th>Donateur</th>
+                            <th>Montant</th>
+                            <th>Type</th>
+                            <th>Date</th>
+                            <th>Description</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <div class="stats-box">
+                    <p>Total Offrandes: <strong id="totalOffrande">0</strong></p>
+                    <p>Nombre d'offrandes: <strong id="countOffrande">0</strong></p>
+                    <p>Moyenne par offrande: <strong id="moyenneOffrande">0</strong></p>
+                </div>
+            </div>
+
+            <!-- MODULE GROUPE -->
+            <div id="groupe" class="module">
+                <h2>👥 Gestion des Groupes</h2>
+                <form onsubmit="addGroupe(); return false;" class="form-group">
+                    <input type="text" id="nomGroupe" placeholder="Nom du groupe" required>
+                    <input type="text" id="responsableGroupe" placeholder="Responsable" required>
+                    <input type="number" id="membresGroupe" placeholder="Nombre de membres" min="0" required>
+                    <input type="date" id="dateCreationGroupe">
+                    <textarea id="descGroupe" placeholder="Description" rows="2"></textarea>
+                    <button type="submit" class="btn-add">➕ Ajouter Groupe</button>
+                </form>
+                <div id="groupeList" class="card-grid"></div>
+            </div>
+
+            <!-- MODULE PLAN -->
+            <div id="plan" class="module">
+                <h2>📋 Gestion des Plans</h2>
+                <form onsubmit="addPlan(); return false;" class="form-group">
+                    <input type="text" id="titrePlan" placeholder="Titre du plan" required>
+                    <textarea id="descPlan" placeholder="Description du plan" rows="3" required></textarea>
+                    <input type="date" id="datePlan" required>
+                    <select id="statusPlan" required>
+                        <option value="">-- Sélectionner le statut --</option>
+                        <option value="En cours">En cours</option>
+                        <option value="Terminé">Terminé</option>
+                        <option value="En attente">En attente</option>
+                    </select>
+                    <button type="submit" class="btn-add">➕ Ajouter</button>
+                </form>
+                <div id="planList" class="card-grid"></div>
+            </div>
+
+            <!-- MODULE ÉVÉNEMENT -->
+            <div id="evenement" class="module">
+                <h2>🎉 Gestion des Événements</h2>
+                <form onsubmit="addEvenement(); return false;" class="form-group">
+                    <input type="text" id="nomEvenement" placeholder="Nom de l'événement" required>
+                    <textarea id="descEvenement" placeholder="Description" rows="2" required></textarea>
+                    <input type="date" id="dateEvenement" required>
+                    <input type="time" id="heureEvenement">
+                    <input type="text" id="lieuEvenement" placeholder="Lieu" required>
+                    <input type="number" id="participantsEvenement" placeholder="Nombre de participants attendus" min="0">
+                    <button type="submit" class="btn-add">➕ Ajouter Événement</button>
+                </form>
+                <div id="evenementList" class="card-grid"></div>
+            </div>
+
+            <!-- MODULE CIMETIÈRE -->
+            <div id="cimetiere" class="module">
+                <h2>⛑️ Gestion du Cimetière</h2>
+                <form onsubmit="addInhumation(); return false;" class="form-group">
+                    <input type="text" id="nomDefunt" placeholder="Nom du défunt" required>
+                    <input type="date" id="dateNaissance" placeholder="Date de naissance">
+                    <input type="date" id="dateInhumation" placeholder="Date d'inhumation" required>
+                    <input type="text" id="sectionCimetiere" placeholder="Section / Numéro de tombe" required>
+                    <input type="text" id="familleDefunt" placeholder="Famille / Contact" required>
+                    <textarea id="remarqueCimetiere" placeholder="Remarques" rows="2"></textarea>
+                    <button type="submit" class="btn-add">➕ Ajouter Inhumation</button>
+                </form>
+                <table id="cimetiereTa" class="table">
+                    <thead>
+                        <tr>
+                            <th>Nom du défunt</th>
+                            <th>Date d'inhumation</th>
+                            <th>Section</th>
+                            <th>Famille</th>
+                            <th>Remarques</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <p>Total inhumations: <strong id="countCimetiere">0</strong></p>
+            </div>
+
+            <!-- MODULE BAPTÊME -->
+            <div id="bapteme" class="module">
+                <h2>💧 Gestion des Baptêmes</h2>
+                <form onsubmit="addBapteme(); return false;" class="form-group">
+                    <input type="text" id="nomBaptise" placeholder="Nom du baptisé" required>
+                    <input type="number" id="ageBaptise" placeholder="Âge" min="0" required>
+                    <input type="date" id="dateBapteme" required>
+                    <input type="text" id="parrainBapteme" placeholder="Parrain/Marraine" required>
+                    <input type="text" id="pastorBapteme" placeholder="Pasteur" required>
+                    <textarea id="remarqueBapteme" placeholder="Remarques" rows="2"></textarea>
+                    <button type="submit" class="btn-add">➕ Ajouter Baptême</button>
+                </form>
+                <table id="baptemeTable" class="table">
+                    <thead>
+                        <tr>
+                            <th>Baptisé</th>
+                            <th>Âge</th>
+                            <th>Date</th>
+                            <th>Parrain/Marraine</th>
+                            <th>Pasteur</th>
+                            <th>Remarques</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <p>Total baptêmes: <strong id="countBapteme">0</strong></p>
+            </div>
+
+            <!-- MODULE MARIAGE -->
+            <div id="mariage" class="module">
+                <h2>💒 Gestion des Mariages</h2>
+                <form onsubmit="addMariage(); return false;" class="form-group">
+                    <input type="text" id="nomEpoux" placeholder="Nom de l'époux" required>
+                    <input type="text" id="nomEpouse" placeholder="Nom de l'épouse" required>
+                    <input type="date" id="dateMariage" required>
+                    <input type="text" id="pastorMariage" placeholder="Pasteur célébrant" required>
+                    <input type="text" id="temoins" placeholder="Témoins" required>
+                    <textarea id="remarqueMariage" placeholder="Remarques" rows="2"></textarea>
+                    <button type="submit" class="btn-add">➕ Ajouter Mariage</button>
+                </form>
+                <table id="mariageTable" class="table">
+                    <thead>
+                        <tr>
+                            <th>Époux</th>
+                            <th>Épouse</th>
+                            <th>Date</th>
+                            <th>Pasteur</th>
+                            <th>Témoins</th>
+                            <th>Remarques</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <p>Total mariages: <strong id="countMariage">0</strong></p>
+            </div>
+
+            <!-- MODULE OBJETS -->
+            <div id="objets" class="module">
+                <h2>📦 Objets de l'Église</h2>
+                <form onsubmit="addObjet(); return false;" class="form-group">
+                    <input type="text" id="nomObjet" placeholder="Nom de l'objet" required>
+                    <textarea id="descObjet" placeholder="Description" rows="2"></textarea>
+                    <select id="typeObjet" required>
+                        <option value="">-- Sélectionner le type --</option>
+                        <option value="Mobilier">🪑 Mobilier</option>
+                        <option value="Équipement">⚙️ Équipement</option>
+                        <option value="Décoration">🎨 Décoration</option>
+                        <option value="Livre">📖 Livre</option>
+                        <option value="Instrument">🎵 Instrument</option>
+                        <option value="Autre">📌 Autre</option>
+                    </select>
+                    <input type="number" id="quantiteObjet" placeholder="Quantité" value="1" min="0" required>
+                    <input type="date" id="dateAcquisitionObjet" placeholder="Date d'acquisition">
+                    <button type="submit" class="btn-add">➕ Ajouter</button>
+                </form>
+                <table id="objetTable" class="table">
+                    <thead>
+                        <tr>
+                            <th>Objet</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                            <th>Quantité</th>
+                            <th>Date d'acquisition</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+            <!-- MODULE STATISTIQUES -->
+            <div id="stats" class="module">
+                <h2>📊 Statistiques Générales</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>👤 Membres</h3>
+                        <p class="stat-number" id="statTotalMembre">0</p>
+                        <p class="stat-subtitle">Membres actifs</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>💰 Dîmes</h3>
+                        <p class="stat-number" id="statTotalDime">0</p>
+                        <p class="stat-subtitle" id="statCountDime">0 entrées</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>🙏 Offrandes</h3>
+                        <p class="stat-number" id="statTotalOffrande">0</p>
+                        <p class="stat-subtitle" id="statCountOffrande">0 entrées</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>💵 Total Revenus</h3>
+                        <p class="stat-number" id="statTotalRevenus">0</p>
+                        <p class="stat-subtitle">Dîmes + Offrandes</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>👥 Groupes</h3>
+                        <p class="stat-number" id="statCountGroupes">0</p>
+                        <p class="stat-subtitle">Groupes actifs</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>🎉 Événements</h3>
+                        <p class="stat-number" id="statCountEvenement">0</p>
+                        <p class="stat-subtitle">Événements</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>⛑️ Inhumations</h3>
+                        <p class="stat-number" id="statCountCimetiere">0</p>
+                        <p class="stat-subtitle">Cimetière</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>💧 Baptêmes</h3>
+                        <p class="stat-number" id="statCountBapteme">0</p>
+                        <p class="stat-subtitle">Baptêmes</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>💒 Mariages</h3>
+                        <p class="stat-number" id="statCountMariage">0</p>
+                        <p class="stat-subtitle">Mariages</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>📦 Objets</h3>
+                        <p class="stat-number" id="statCountObjets">0</p>
+                        <p class="stat-subtitle">Objets répertoriés</p>
+                    </div>
+                </div>
+                <div style="margin-top: 30px;">
+                    <button onclick="exportData()" class="btn-export">📥 Exporter les données</button>
+                    <button onclick="importData()" class="btn-export">📤 Importer les données</button>
+                    <button onclick="printReport()" class="btn-export">🖨️ Imprimer rapport</button>
+                    <button onclick="clearAllData()" class="btn-danger">🗑️ Supprimer tout</button>
+                </div>
+            </div>
+
+            <!-- MODULE ADMIN -->
+            <div id="admin" class="module">
+                <h2>⚙️ Panel d'Administration</h2>
+                <div class="admin-dashboard">
+                    <div class="admin-stat">
+                        <h3>Total Utilisateurs</h3>
+                        <p id="totalUsers">0</p>
+                    </div>
+                    <div class="admin-stat">
+                        <h3>Licences Actives</h3>
+                        <p id="activeLicenses">0</p>
+                    </div>
+                    <div class="admin-stat">
+                        <h3>Demandes en Attente</h3>
+                        <p id="pendingRequests">0</p>
+                    </div>
+                    <div class="admin-stat">
+                        <h3>Revenus Totaux</h3>
+                        <p id="totalRevenue">$0</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODULE UTILISATEURS -->
+            <div id="users" class="module">
+                <h2>👥 Gestion des Utilisateurs</h2>
+                <table id="userTable" class="table">
+                    <thead>
+                        <tr>
+                            <th>Nom d'utilisateur</th>
+                            <th>Email</th>
+                            <th>Église</th>
+                            <th>Rôle</th>
+                            <th>Licence</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+            <!-- MODULE LICENCES -->
+            <div id="licenses" class="module">
+                <h2>🔑 Gestion des Licences</h2>
+                <button onclick="generateLicense()" class="btn-add">➕ Générer une licence</button>
+                <table id="licenseTable" class="table">
+                    <thead>
+                        <tr>
+                            <th>Clé</th>
+                            <th>Email</th>
+                            <th>Église</th>
+                            <th>Statut</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+            <!-- MODULE MISES À JOUR -->
+            <div id="updates" class="module">
+                <h2>⬆️ Mises à jour du Logiciel</h2>
+                <p>Téléchargez la nouvelle version et mettez à jour.</p>
+                <input type="file" id="updateFile" accept=".zip">
+                <button onclick="uploadUpdate()" class="btn-add">📤 Télécharger mise à jour</button>
+            </div>
+
+            <!-- MODULE LICENCE & PAIEMENT -->
+            <div id="licence" class="module">
+                <h2>🔑 Licence & Paiement manuel</h2>
+
+                <div class="licence-layout">
+                    <section class="licence-card">
+                        <div class="licence-status" id="licenceStatusBox">
+                            <h3>Statut de votre licence</h3>
+                            <p id="licenceStatusText">Verification...</p>
+                        </div>
+
+                        <div class="payment-box">
+                            <h3>Acheter une licence</h3>
+                            <p class="help-text">Prix actuel : <strong>15 USD a vie</strong>. Payez par Mobile Money, puis envoyez la reference de transaction ici.</p>
+                            <ol class="payment-steps">
+                                <li>Le client envoie le paiement au numero Airtel ou Orange affiche.</li>
+                                <li>Il attend le SMS de confirmation Mobile Money.</li>
+                                <li>Il copie la reference ou ID transaction visible dans ce SMS.</li>
+                                <li>S'il ne trouve pas l'ID, il met le nom du payeur, l'heure du paiement et le montant.</li>
+                            </ol>
+
+                            <div class="payment-numbers">
+                                <div>
+                                    <strong>Airtel Money</strong>
+                                    <span id="airtelNumber">0975452377</span>
+                                </div>
+                                <div>
+                                    <strong>Orange Money</strong>
+                                    <span id="orangeNumber">0800273782</span>
+                                </div>
+                            </div>
+
+                            <form onsubmit="submitManualPayment(); return false;" class="form-group licence-form">
+                                <select id="paymentMethod" required>
+                                    <option value="">Choisir le moyen de paiement</option>
+                                    <option value="Airtel Money">Airtel Money</option>
+                                    <option value="Orange Money">Orange Money</option>
+                                    <option value="Autre Mobile Money">Autre Mobile Money</option>
+                                </select>
+                                <input type="text" id="paymentPhone" placeholder="Numero utilise pour payer" required>
+                                <input type="text" id="paymentReference" placeholder="Reference SMS / ID transaction" required>
+                                <input type="number" id="paymentAmount" placeholder="Montant paye" value="15" min="1" step="0.01" required>
+                                <button type="submit" class="btn-add">Envoyer la demande</button>
+                            </form>
+                        </div>
+
+                        <div class="activation-box">
+                            <h3>Activer votre logiciel</h3>
+                            <form onsubmit="activateLicense(); return false;" class="form-group licence-form">
+                                <input type="text" id="licenseKeyInput" placeholder="Coller la cle de licence recue" required>
+                                <button type="submit" class="btn-add">Activer</button>
+                            </form>
+                        </div>
+                    </section>
+
+                    <section class="licence-card admin-license-panel" id="adminLicensePanel" style="display: none;">
+                        <h3>Administration des demandes</h3>
+                        <p class="help-text">Validez les paiements recus manuellement, puis donnez la cle au client.</p>
+                        <div id="licenseRequestsList" class="license-requests"></div>
+                    </section>
+                </div>
+            </div>
+
+            <!-- MODULE ADMIN -->
+            <div id="admin" class="module">
+                <h2>⚙️ Administration</h2>
+                <p>Bienvenue dans le panneau d'administration. Gérez les utilisateurs, licences et mises à jour.</p>
+            </div>
+
+            <!-- MODULE UTILISATEURS -->
+            <div id="users" class="module">
+                <h2>👥 Gestion des Utilisateurs</h2>
+                <table id="userTable" class="table">
+                    <thead>
+                        <tr>
+                            <th>Nom d'utilisateur</th>
+                            <th>Email</th>
+                            <th>Église</th>
+                            <th>Rôle</th>
+                            <th>Licence</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+            <!-- MODULE LICENCES -->
+            <div id="licenses" class="module">
+                <h2>🔑 Gestion des Licences</h2>
+                <button onclick="generateLicense()" class="btn-add">➕ Générer une licence</button>
+                <table id="licenseTable" class="table">
+                    <thead>
+                        <tr>
+                            <th>Clé</th>
+                            <th>Email</th>
+                            <th>Église</th>
+                            <th>Statut</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+            <!-- MODULE MISES À JOUR -->
+            <div id="updates" class="module">
+                <h2>⬆️ Mises à jour du Logiciel</h2>
+                <p>Téléchargez la nouvelle version et mettez à jour.</p>
+                <input type="file" id="updateFile" accept=".zip">
+                <button onclick="uploadUpdate()" class="btn-add">📤 Télécharger mise à jour</button>
+            </div>
+
+            <!-- MODULE MESSAGES -->
+            <div id="messages" class="module">
+                <h2>📧 Messages</h2>
+                <button onclick="showSendMessageModal()" class="btn-add">➕ Nouveau message</button>
+                <div id="messageList"></div>
+            </div>
+
+            <!-- MODULE RÉUNIONS -->
+            <div id="meetings" class="module">
+                <h2>📝 Réunions</h2>
+                <button onclick="showAddMeetingModal()" class="btn-add">➕ Nouvelle réunion</button>
+                <div id="meetingList"></div>
+            </div>
+
+            <!-- MODULE RAPPORTS -->
+            <div id="reports" class="module">
+                <h2>📄 Rapports</h2>
+                <button onclick="generateMonthlyReport()" class="btn-add">📊 Rapport mensuel</button>
+                <button onclick="generateYearlyReport()" class="btn-add">📈 Rapport annuel</button>
+                <div id="reportContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE CHANGEMENT DE MOT DE PASSE -->
+    <div id="changePasswordModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeChangePasswordModal()">&times;</span>
+            <h2>🔑 Changer le mot de passe</h2>
+            <form onsubmit="handleChangePassword(); return false;" class="login-form">
+                <div class="form-group-login">
+                    <label>Mot de passe actuel</label>
+                    <input type="password" id="currentPasswordInput" placeholder="Entrez votre mot de passe actuel" required>
+                </div>
+                <div class="form-group-login">
+                    <label>Nouveau mot de passe</label>
+                    <input type="password" id="newPasswordInput" placeholder="Entrez un nouveau mot de passe" required>
+                </div>
+                <div class="form-group-login">
+                    <label>Confirmez le nouveau mot de passe</label>
+                    <input type="password" id="confirmNewPasswordInput" placeholder="Confirmez votre nouveau mot de passe" required>
+                </div>
+                <button type="submit" class="btn-login">✅ Mettre à jour</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL ENVOI DE MESSAGE -->
+    <div id="sendMessageModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeSendMessageModal()">&times;</span>
+            <h2>📧 Envoyer un message</h2>
+            <form onsubmit="sendMessage(); return false;">
+                <div class="form-group">
+                    <label for="messageFrom">De:</label>
+                    <input type="text" id="messageFrom" required>
+                </div>
+                <div class="form-group">
+                    <label for="messageTo">À:</label>
+                    <input type="text" id="messageTo" required>
+                </div>
+                <div class="form-group">
+                    <label for="messageSubject">Sujet:</label>
+                    <input type="text" id="messageSubject" required>
+                </div>
+                <div class="form-group">
+                    <label for="messageContent">Message:</label>
+                    <textarea id="messageContent" rows="5" required></textarea>
+                </div>
+                <button type="submit" class="btn-add">📤 Envoyer</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL AJOUT DE RÉUNION -->
+    <div id="addMeetingModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeAddMeetingModal()">&times;</span>
+            <h2>📝 Ajouter une réunion</h2>
+            <form onsubmit="addMeeting(); return false;">
+                <div class="form-group">
+                    <label for="meetingTitle">Titre:</label>
+                    <input type="text" id="meetingTitle" required>
+                </div>
+                <div class="form-group">
+                    <label for="meetingDate">Date:</label>
+                    <input type="date" id="meetingDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="meetingParticipants">Participants:</label>
+                    <input type="text" id="meetingParticipants" required>
+                </div>
+                <div class="form-group">
+                    <label for="meetingMinutes">Minutes:</label>
+                    <textarea id="meetingMinutes" rows="5" required></textarea>
+                </div>
+                <button type="submit" class="btn-add">➕ Ajouter</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="auth.js"></script>
+    <script src="main.js"></script>
+    <script src="licence-ui.js"></script>
+</body>
+</html>

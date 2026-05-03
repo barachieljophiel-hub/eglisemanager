@@ -1,0 +1,101 @@
+{
+  "name": "eglisemanager",
+  "version": "1.0.0",
+  "description": "Logiciel professionnel de gestion d'église pour les églises africaines",
+  "main": "electron-main.js",
+  "homepage": "./",
+  "author": "EgliseManager",
+  "license": "PROPRIETARY",
+  "scripts": {
+    "dist": "electron-builder",
+    "start": "node start-local.js",
+    "start:electron": "node start-electron.js",
+    "backend": "node server.js",
+    "electron": "electron .",
+    "dev": "node start-electron.js",
+    "build": "echo Installez electron-builder quand l'application est prete pour l'installateur.",
+    "build:win": "echo Installez electron-builder quand l'application est prete pour l'installateur.",
+    "build:mac": "echo Installez electron-builder quand l'application est prete pour l'installateur.",
+    "build:linux": "echo Installez electron-builder quand l'application est prete pour l'installateur.",
+    "build:all": "echo Installez electron-builder quand l'application est prete pour l'installateur."
+  },
+  "dependencies": {
+    "axios": "^1.6.0",
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^7.5.0",
+    "nodemailer": "^6.9.6"
+  },
+  "devDependencies": {
+    "electron": "^41.5.0",
+    "electron-builder": "^26.8.1"
+  },
+  "build": {
+    "appId": "com.eglisemanager.app",
+    "productName": "EgliseManager",
+    "files": [
+      "index.html",
+      "style.css",
+      "main.js",
+      "auth.js",
+      "licence-ui.js",
+      "server.js",
+      "backup.js",
+      "licence.js",
+      "payment.js",
+      "electron-main.js",
+      "start-local.js",
+      "start-electron.js",
+      "routes/**/*",
+      "models/**/*",
+      "node_modules/**/*",
+      "package.json"
+    ],
+    "directories": {
+      "buildResources": "assets"
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64",
+            "ia32"
+          ]
+        }
+      ],
+      "certificateFile": null,
+      "certificatePassword": null,
+      "signingHashAlgorithms": [
+        "sha256"
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "installerIcon": "assets/icon.ico",
+      "uninstallerIcon": "assets/icon.ico"
+    },
+    "mac": {
+      "target": [
+        "dmg",
+        "zip"
+      ],
+      "category": "public.app-category.business",
+      "icon": "assets/icon.icns"
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "icon": "assets/icon.png"
+    }
+  }
+}
